@@ -12,6 +12,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,   // or true if you want JSDoc-typed checking
     "jsx": "react-jsx",
 
     /* Linting */
