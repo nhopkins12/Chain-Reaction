@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-/* Optional: light reset for full-height app layout */
-html, body, #root {
-  height: 100%;
-}
