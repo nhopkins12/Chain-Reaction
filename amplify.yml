@@ -5,7 +5,11 @@ applications:
       phases:
         preBuild:
           commands:
+            # Install deps (includes backend CLI and libs)
             - npm ci
+            # Deploy Amplify Gen 2 backend and generate outputs
+            - npx -y @aws-amplify/backend-cli@latest deploy --env dev
+            - npx -y @aws-amplify/backend-cli@latest outputs -o amplify_outputs.json --env dev
         build:
           commands:
             - npm run build
