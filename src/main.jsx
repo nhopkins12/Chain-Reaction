@@ -1,11 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import './amplify'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import { Amplify } from "aws-amplify";
 import WordChainGame from './WordChainGame.jsx'
+import outputs from "../amplify_outputs.json";
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <WordChainGame />
-  </StrictMode>,
-)
+Amplify.configure(outputs);
+
+createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

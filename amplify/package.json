@@ -1,15 +1,3 @@
 {
-  "name": "amplify-backend",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "sandbox": "npx -y @aws-amplify/backend-cli@latest sandbox",
-    "deploy:dev": "npx -y @aws-amplify/backend-cli@latest deploy --env dev",
-    "outputs:dev": "npx -y @aws-amplify/backend-cli@latest outputs -o ../frontend/amplify_outputs.json --env dev"
-  },
-  "devDependencies": {
-    "@aws-amplify/backend": "^1.0.0",
-    "typescript": "^5.4.0"
-  }
+  "type": "module"
 }
-
