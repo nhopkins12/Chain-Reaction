@@ -1,23 +1,19 @@
 version: 1
-applications:
-  - appRoot: .
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            # Install deps (includes backend CLI and libs)
-            - npm ci
-            # Deploy Amplify Gen 2 backend and generate outputs
-            - npx -y @aws-amplify/backend-cli@latest deploy --env dev
-            - npx -y @aws-amplify/backend-cli@latest outputs -o amplify_outputs.json --env dev
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: dist
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+        - npx -y @aws-amplify/backend-cli@latest deploy --env dev --region us-east-1 --yes
+        - npx -y @aws-amplify/backend-cli@latest outputs -o amplify_outputs.json --env dev --region us-east-1
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
 
