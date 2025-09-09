@@ -1,0 +1,48 @@
+name: Deploy Amplify Backend (Gen 2)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+
+      - name: Install backend deps
+        working-directory: amplify
+        run: |
+          npm ci || npm i
+
+      - name: Deploy backend (dev)
+        run: npx -y @aws-amplify/backend-cli@latest deploy --env dev
+
+      - name: Generate frontend outputs
+        run: npx -y @aws-amplify/backend-cli@latest outputs -o frontend/amplify_outputs.json --env dev
+
+      - name: Commit outputs file
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions
+          author_email: github-actions@users.noreply.github.com
+          message: 'chore: update amplify_outputs.json (dev)'
+          add: 'frontend/amplify_outputs.json'
+
