@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { generateClient } from 'aws-amplify/data';
 
 const WordChainGame = () => {
   const [startWord, setStartWord] = useState('START');
@@ -12,6 +13,32 @@ const WordChainGame = () => {
   const [showScoreboard, setShowScoreboard] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [playerName, setPlayerName] = useState('');
+
+  // Load today's puzzle from Amplify Data (DailyPuzzle model)
+  React.useEffect(() => {
+    const loadToday = async () => {
+      try {
+        const client = generateClient();
+        const todayId = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+        const { data, errors } = await client.models.DailyPuzzle.get({ id: todayId });
+        if (data) {
+          const s = (data.startWord || '').toUpperCase();
+          const t = (data.targetWord || '').toUpperCase();
+          if (s && t) {
+            setStartWord(s);
+            setTargetWord(t);
+            setWordChain([s]);
+          }
+        } else if (errors) {
+          // Non-fatal; keep defaults if not found
+          console.warn('DailyPuzzle fetch errors:', errors);
+        }
+      } catch (err) {
+        console.warn('Failed to load DailyPuzzle:', err);
+      }
+    };
+    loadToday();
+  }, []);
 
   // Mock leaderboard data
   const [leaderboard, setLeaderboard] = useState([

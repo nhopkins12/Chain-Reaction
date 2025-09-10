@@ -7,6 +7,24 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
+  // Daily Word Chain puzzle keyed by date (YYYY-MM-DD)
+  DailyPuzzle: a
+    .model({
+      id: a.string(), // date key in ISO format YYYY-MM-DD
+      startWord: a.string(),
+      targetWord: a.string(),
+      // Optional: description or metadata fields can be added later
+    })
+    .identifier(["id"]) // enforce one record per day
+    .authorization((allow) => [
+      // Development: allow API key to manage records. Tighten before prod.
+      allow.publicApiKey(),
+      // Recommended for prod:
+      // allow.publicApiKey().to(["read"]),
+      // allow.group("admins").to(["create", "update", "delete", "read"]),
+    ]),
+
+  // Keeping Todo during transition (can be removed later)
   Todo: a
     .model({
       content: a.string(),
