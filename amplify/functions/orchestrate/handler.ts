@@ -1,3 +1,5 @@
+import { Amplify } from 'aws-amplify';
+import outputs from '$amplify/backend-output';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../data/resource';
 import { solve } from '../shared/solver';
@@ -56,7 +58,31 @@ type OrchestrateEvent = {
   forceResolve?: boolean; // if true, recompute even if computeState is 'ready'
 };
 
-export const handler = async (event: OrchestrateEvent = {}) => {
+// Configure Amplify (GraphQL provider) for server environment
+Amplify.configure(outputs);
+
+function parseEvent(input: any): OrchestrateEvent {
+  if (!input) return {};
+  // If invoked via Function URL / API Gateway
+  if (typeof input === 'object' && (input.body !== undefined || input.queryStringParameters)) {
+    try {
+      const bodyObj = input.body ? JSON.parse(input.body) : {};
+      const qs = input.queryStringParameters || {};
+      return {
+        date: bodyObj.date ?? qs.date,
+        solveAll: bodyObj.solveAll ?? (qs.solveAll === 'true'),
+        archiveYesterday: bodyObj.archiveYesterday ?? (qs.archiveYesterday !== 'false'),
+        forceResolve: bodyObj.forceResolve ?? (qs.forceResolve === 'true'),
+      } as OrchestrateEvent;
+    } catch {
+      return {};
+    }
+  }
+  return input as OrchestrateEvent;
+}
+
+export const handler = async (eventRaw: OrchestrateEvent | any = {}) => {
+  const event = parseEvent(eventRaw);
   const client = generateClient<Schema>();
 
   const now = new Date();
@@ -170,4 +196,3 @@ export const handler = async (event: OrchestrateEvent = {}) => {
   summary.solved = solved;
   return { statusCode: 200, body: JSON.stringify(summary) };
 };
-

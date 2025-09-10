@@ -1,3 +1,5 @@
+import { Amplify } from 'aws-amplify';
+import outputs from '$amplify/backend-output';
 import { generateClient } from 'aws-amplify/data';
 import { solve } from '../shared/solver';
 // Small starter list; replace/extend with your curated word list
@@ -41,7 +43,31 @@ function plusDays(base, days) {
     d.setUTCDate(d.getUTCDate() + days);
     return d;
 }
-export const handler = async (event = {}) => {
+// Configure Amplify (GraphQL provider) for server environment
+Amplify.configure(outputs);
+function parseEvent(input) {
+    if (!input)
+        return {};
+    // If invoked via Function URL / API Gateway
+    if (typeof input === 'object' && (input.body !== undefined || input.queryStringParameters)) {
+        try {
+            const bodyObj = input.body ? JSON.parse(input.body) : {};
+            const qs = input.queryStringParameters || {};
+            return {
+                date: bodyObj.date ?? qs.date,
+                solveAll: bodyObj.solveAll ?? (qs.solveAll === 'true'),
+                archiveYesterday: bodyObj.archiveYesterday ?? (qs.archiveYesterday !== 'false'),
+                forceResolve: bodyObj.forceResolve ?? (qs.forceResolve === 'true'),
+            };
+        }
+        catch {
+            return {};
+        }
+    }
+    return input;
+}
+export const handler = async (eventRaw = {}) => {
+    const event = parseEvent(eventRaw);
     const client = generateClient();
     const now = new Date();
     const baseId = event.date ?? isoDate(now);
