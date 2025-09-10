@@ -362,50 +362,11 @@ const WordChainGame = () => {
           </div>
         )}
 
-        {/* Game Setup */}
+        {/* Daily Puzzle Notice */}
         <div className="border-t border-gray-200 pt-8">
-          <div className="flex justify-center gap-8 mb-8">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Start Word
-              </label>
-              <input
-                type="text"
-                value={startWord}
-                onChange={(e) => {
-                  const newStart = e.target.value.toUpperCase();
-                  setStartWord(newStart);
-                  setWordChain([newStart]);
-                  setIsComplete(false);
-                  setShowFullChain(false);
-                }}
-                className="w-28 px-3 py-2 border border-gray-300 rounded text-center font-semibold focus:outline-none focus:border-black"
-                maxLength={10}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Target Word
-              </label>
-              <input
-                type="text"
-                value={targetWord}
-                onChange={(e) => setTargetWord(e.target.value.toUpperCase())}
-                className="w-28 px-3 py-2 border border-gray-300 rounded text-center font-semibold focus:outline-none focus:border-black"
-                maxLength={10}
-              />
-            </div>
-          </div>
-
-          {/* Instructions */}
           <div className="bg-gray-50 rounded-lg p-6 text-center">
-            <div className="text-sm text-gray-600 leading-relaxed">
-              <strong>How to play:</strong> Add words that share letters with the end of the current word. 
-              Overlapping letters will be highlighted in green and merge the words together.
-              <br />
-              <span className="text-gray-500">
-                Example: START → ARTSY → SYRINGE → GEARS → END
-              </span>
+            <div className="text-sm text-gray-700">
+              Daily puzzle is set automatically. New puzzle each day.
             </div>
           </div>
         </div>
