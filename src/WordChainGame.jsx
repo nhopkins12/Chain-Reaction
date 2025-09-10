@@ -15,32 +15,48 @@ const WordChainGame = () => {
   const [playerName, setPlayerName] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
 
-  // Load today's puzzle from Amplify Data (DailyPuzzle model)
+  // Load most recent DailyPuzzle from Amplify Data
   React.useEffect(() => {
-    const loadToday = async () => {
+    const loadLatest = async () => {
       try {
         const client = generateClient();
-        const todayId = new Date().toISOString().slice(0, 10);
-        const { data, errors } = await client.models.DailyPuzzle.get({ id: todayId });
+        const { data, errors } = await client.models.DailyPuzzle.list();
         if (errors) {
-          console.warn('DailyPuzzle get errors:', errors);
+          console.warn('DailyPuzzle list errors:', errors);
         }
-        if (data) {
-          const s = (data.startWord || '').toUpperCase();
-          const t = (data.targetWord || '').toUpperCase();
+        const items = Array.isArray(data) ? data : [];
+        if (items.length === 0) return;
+
+        const latest = items
+          .slice()
+          .sort((a, b) => {
+            const ca = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const cb = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+            if (cb !== ca) return cb - ca;
+            const ua = a?.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+            const ub = b?.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+            if (ub !== ua) return ub - ua;
+            const ida = typeof a?.id === 'string' ? a.id : '';
+            const idb = typeof b?.id === 'string' ? b.id : '';
+            const dateRe = /^\d{4}-\d{2}-\d{2}/;
+            if (dateRe.test(idb) && dateRe.test(ida)) return idb.localeCompare(ida);
+            return 0;
+          })[0];
+
+        if (latest) {
+          const s = (latest.startWord || '').toUpperCase();
+          const t = (latest.targetWord || '').toUpperCase();
           if (s && t) {
             setStartWord(s);
             setTargetWord(t);
             setWordChain([s]);
           }
-        } else {
-          console.warn('No DailyPuzzle found for', todayId);
         }
       } catch (err) {
-        console.warn('Failed to load DailyPuzzle:', err);
+        console.warn('Failed to load latest DailyPuzzle:', err);
       }
     };
-    loadToday();
+    loadLatest();
   }, []);
 
   // Add custom CSS for fadeIn animation

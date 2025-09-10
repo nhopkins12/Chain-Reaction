@@ -9,8 +9,24 @@ const dailyPuzzle = defineFunction({
   memoryMB: 512,
 });
 
+const rotateDaily = defineFunction({
+  name: 'rotate-daily',
+  entry: './functions/rotate-daily/handler.ts',
+  timeoutSeconds: 30,
+  memoryMB: 512,
+});
+
+const solvePending = defineFunction({
+  name: 'solve-pending',
+  entry: './functions/solve-pending/handler.ts',
+  timeoutSeconds: 60,
+  memoryMB: 1024,
+});
+
 defineBackend({
   auth,
   data,
   dailyPuzzle,
+  rotateDaily,
+  solvePending,
 });

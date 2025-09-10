@@ -13,7 +13,13 @@ const schema = a.schema({
       id: a.id(), // date key in ISO format YYYY-MM-DD
       startWord: a.string(),
       targetWord: a.string(),
-      // Optional: description or metadata fields can be added later
+      // Operational state
+      status: a.string().optional(), // 'active' | 'next' | 'archived' | 'pending'
+      computeState: a.string().optional(), // 'pending' | 'solving' | 'ready' | 'failed'
+      // Solver outputs
+      bestSteps: a.integer().optional(),
+      bestCharacters: a.integer().optional(),
+      bestChain: a.json().optional(), // Array<{ word: string; overlap: number }>
     })
     .authorization((allow) => [
       // Development: allow API key to manage records. Tighten before prod.

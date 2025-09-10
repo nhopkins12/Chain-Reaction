@@ -54,9 +54,9 @@ export const handler = async () => {
   const todayId = isoDate(now); // YYYY-MM-DD (UTC)
   const tomorrowId = isoDate(plusDays(now, 1));
 
-  // Upsert today's puzzle as active
-  const existing = await client.models.DailyPuzzle.get({ id: todayId });
-  if (!existing.data) {
+  // Ensure today exists and is active
+  const today = await client.models.DailyPuzzle.get({ id: todayId });
+  if (!today.data) {
     const pair = pickDailyPair(todayId);
     const payload: DailyPuzzle = {
       id: todayId,
@@ -66,13 +66,13 @@ export const handler = async () => {
       computeState: 'pending',
     } as DailyPuzzle;
     await client.models.DailyPuzzle.create(payload);
-  } else if (existing.data.status !== 'active') {
+  } else if (today.data.status !== 'active') {
     await client.models.DailyPuzzle.update({ id: todayId, status: 'active' });
   }
 
-  // Ensure tomorrow's puzzle exists as next
-  const next = await client.models.DailyPuzzle.get({ id: tomorrowId });
-  if (!next.data) {
+  // Ensure tomorrow exists and is next
+  const tomorrow = await client.models.DailyPuzzle.get({ id: tomorrowId });
+  if (!tomorrow.data) {
     const pair = pickDailyPair(tomorrowId);
     const payload: DailyPuzzle = {
       id: tomorrowId,
@@ -82,10 +82,17 @@ export const handler = async () => {
       computeState: 'pending',
     } as DailyPuzzle;
     await client.models.DailyPuzzle.create(payload);
-  } else if (next.data.status !== 'next') {
+  } else if (tomorrow.data.status !== 'next') {
     await client.models.DailyPuzzle.update({ id: tomorrowId, status: 'next' });
   }
 
-  return { statusCode: 200, body: `Ensured active(${todayId}) and next(${tomorrowId}) puzzles` };
+  // Optionally archive yesterday if present and still active
+  const yesterdayId = isoDate(plusDays(now, -1));
+  const yesterday = await client.models.DailyPuzzle.get({ id: yesterdayId });
+  if (yesterday.data && yesterday.data.status === 'active') {
+    await client.models.DailyPuzzle.update({ id: yesterdayId, status: 'archived' });
+  }
+
+  return { statusCode: 200, body: `Rotated daily puzzles for ${todayId}` };
 };
 
