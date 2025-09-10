@@ -212,8 +212,8 @@ const WordChainGame = () => {
   const continuousWord = buildContinuousWord();
 
   return (
-    <div className="min-h-screen bg-white font-['Helvetica_Neue',_sans-serif]">
-      <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="min-h-screen bg-white/90 font-['Helvetica_Neue',_sans-serif]">
+      <div className="max-w-6xl mx-auto px-8 py-12">
         
         {/* Header */}
         <header className="text-center mb-16">
