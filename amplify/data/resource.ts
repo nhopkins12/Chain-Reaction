@@ -15,7 +15,6 @@ const schema = a.schema({
       targetWord: a.string(),
       // Optional: description or metadata fields can be added later
     })
-    .identifier(["id"]) // enforce one record per day
     .authorization((allow) => [
       // Development: allow API key to manage records. Tighten before prod.
       allow.publicApiKey(),
