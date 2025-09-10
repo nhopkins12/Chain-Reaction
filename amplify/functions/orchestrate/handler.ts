@@ -1,9 +1,3 @@
-import { Amplify } from 'aws-amplify';
-// Use the generated outputs JSON from the repo root (Amplify Console writes it at build time)
-// Path from this file: amplify/functions/orchestrate/handler.ts -> repo root
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import outputs from '../../../amplify_outputs.json';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../data/resource';
 import { solve } from '../shared/solver';
@@ -62,31 +56,7 @@ type OrchestrateEvent = {
   forceResolve?: boolean; // if true, recompute even if computeState is 'ready'
 };
 
-// Configure Amplify (GraphQL provider) for server environment
-Amplify.configure(outputs);
-
-function parseEvent(input: any): OrchestrateEvent {
-  if (!input) return {};
-  // If invoked via Function URL / API Gateway
-  if (typeof input === 'object' && (input.body !== undefined || input.queryStringParameters)) {
-    try {
-      const bodyObj = input.body ? JSON.parse(input.body) : {};
-      const qs = input.queryStringParameters || {};
-      return {
-        date: bodyObj.date ?? qs.date,
-        solveAll: bodyObj.solveAll ?? (qs.solveAll === 'true'),
-        archiveYesterday: bodyObj.archiveYesterday ?? (qs.archiveYesterday !== 'false'),
-        forceResolve: bodyObj.forceResolve ?? (qs.forceResolve === 'true'),
-      } as OrchestrateEvent;
-    } catch {
-      return {};
-    }
-  }
-  return input as OrchestrateEvent;
-}
-
-export const handler = async (eventRaw: OrchestrateEvent | any = {}) => {
-  const event = parseEvent(eventRaw);
+export const handler = async (event: OrchestrateEvent = {}) => {
   const client = generateClient<Schema>();
 
   const now = new Date();
@@ -200,3 +170,4 @@ export const handler = async (eventRaw: OrchestrateEvent | any = {}) => {
   summary.solved = solved;
   return { statusCode: 200, body: JSON.stringify(summary) };
 };
+
