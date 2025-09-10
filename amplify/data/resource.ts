@@ -10,7 +10,7 @@ const schema = a.schema({
   // Daily Word Chain puzzle keyed by date (YYYY-MM-DD)
   DailyPuzzle: a
     .model({
-      id: a.string(), // date key in ISO format YYYY-MM-DD
+      id: a.id(), // date key in ISO format YYYY-MM-DD
       startWord: a.string(),
       targetWord: a.string(),
       // Optional: description or metadata fields can be added later
