@@ -193,9 +193,9 @@ export function solve(
   const chain: ChainItem[] = [];
   let i: number | null = bestIdx;
   while (i !== null) {
-    const n = nodes[i];
-    chain.push({ word: n.word, overlap: n.overlap });
-    i = n.prevIdx;
+    const node: Node = nodes[i as number]!;
+    chain.push({ word: node.word, overlap: node.overlap });
+    i = node.prevIdx;
   }
   chain.reverse();
   // normalize start node overlap to 0
@@ -212,12 +212,11 @@ export function isValidMove(
 ): { valid: boolean; reason?: string; overlap?: number } {
   const opts = { ...DEFAULTS, ...options };
   const p = normalizeWord(prev);
-  const n = normalizeWord(next);
-  if (!p || !n) return { valid: false, reason: "Empty or invalid characters" };
+  const nextNorm = normalizeWord(next);
+  if (!p || !nextNorm) return { valid: false, reason: "Empty or invalid characters" };
   const dict = new Set(filterDict(dictionary, opts));
-  if (!dict.has(n)) return { valid: false, reason: "Word not in dictionary" };
-  const overlap = getOverlap(n, p, opts.minOverlap);
+  if (!dict.has(nextNorm)) return { valid: false, reason: "Word not in dictionary" };
+  const overlap = getOverlap(nextNorm, p, opts.minOverlap);
   if (!overlap) return { valid: false, reason: "Does not link", overlap: 0 };
   return { valid: true, overlap };
 }
-

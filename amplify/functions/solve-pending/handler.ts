@@ -25,7 +25,9 @@ export const handler = async () => {
     // Mark as solving to avoid duplicate work
     await client.models.DailyPuzzle.update({ id: p.id, computeState: 'solving' });
 
-    const result = solve(p.startWord, p.targetWord, WORDS, {
+    const start = (p.startWord ?? '').toString();
+    const target = (p.targetWord ?? '').toString();
+    const result = solve(start, target, WORDS, {
       minOverlap: 2,
       minWordLength: 3,
       maxSteps: 8,
@@ -50,4 +52,3 @@ export const handler = async () => {
 
   return { statusCode: 200, body: `Solved ${solvedCount} pending puzzles` };
 };
-
