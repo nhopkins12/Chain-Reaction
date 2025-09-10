@@ -326,34 +326,7 @@ const WordChainGame = () => {
 
         {/* Game Setup */}
         <div className="border-t border-gray-200 pt-8">
-          <div className="flex justify-center gap-8 mb-8">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Start Word
-              </label>
-              <input
-                type="text"
-                value={startWord}
-                readOnly
-                disabled
-                className="w-28 px-3 py-2 border border-gray-300 rounded text-center font-semibold focus:outline-none focus:border-black"
-                maxLength={10}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Target Word
-              </label>
-              <input
-                type="text"
-                value={targetWord}
-                readOnly
-                disabled
-                className="w-28 px-3 py-2 border border-gray-300 rounded text-center font-semibold focus:outline-none focus:border-black"
-                maxLength={10}
-              />
-            </div>
-          </div>
+          
 
           {/* Instructions */}
           <div className="bg-gray-50 rounded-lg p-6 text-center">
@@ -362,7 +335,7 @@ const WordChainGame = () => {
               Overlapping letters will be highlighted in green and merge the words together.
               <br />
               <span className="text-gray-500">
-                Example: START → ARTSY → SYRINGE → GEARS → END
+                Example: START → ARTSY → SYRINGE → GEARMEN → END
               </span>
             </div>
           </div>
