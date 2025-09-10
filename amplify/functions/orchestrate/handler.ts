@@ -1,8 +1,9 @@
 import { Amplify } from 'aws-amplify';
-// Use the generated outputs JSON from the repo root (available in Amplify Console builds)
+// Use the generated outputs JSON from the repo root (Amplify Console writes it at build time)
+// Path from this file: amplify/functions/orchestrate/handler.ts -> repo root
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import outputs from '../../amplify_outputs.json';
+import outputs from '../../../amplify_outputs.json';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../data/resource';
 import { solve } from '../shared/solver';
