@@ -19,6 +19,6 @@ const backend = defineBackend({
 
 // Schedule the daily puzzle setter at 00:00 UTC
 const dailyRule = new events.Rule(backend.stack, 'DailyPuzzleSchedule', {
-  schedule: events.Schedule.cron({ minute: '40', hour: '0' }),
+  schedule: events.Schedule.cron({ minute: '0', hour: '1' }),
 });
 dailyRule.addTarget(new targets.LambdaFunction(dailyPuzzle.resources.lambda));
