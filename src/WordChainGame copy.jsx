@@ -13,35 +13,60 @@ const WordChainGame = () => {
   const [showScoreboard, setShowScoreboard] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [playerName, setPlayerName] = useState('');
-  const [leaderboard, setLeaderboard] = useState([]);
 
-  // Load today's puzzle from Amplify Data (DailyPuzzle model)
+  // Load most recent puzzle from Amplify Data (DailyPuzzle model)
   React.useEffect(() => {
-    const loadToday = async () => {
+    const loadLatest = async () => {
       try {
         const client = generateClient();
-        const todayId = new Date().toISOString().slice(0, 10);
-        const { data, errors } = await client.models.DailyPuzzle.get({ id: todayId });
+        const { data, errors } = await client.models.DailyPuzzle.list();
         if (errors) {
-          console.warn('DailyPuzzle get errors:', errors);
+          console.warn('DailyPuzzle list errors:', errors);
         }
-        if (data) {
-          const s = (data.startWord || '').toUpperCase();
-          const t = (data.targetWord || '').toUpperCase();
+        const items = Array.isArray(data) ? data : [];
+
+        // Prefer createdAt descending; fallback to updatedAt; then fallback to id if date-like
+        const latest = items
+          .slice()
+          .sort((a, b) => {
+            const ca = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const cb = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+            if (cb !== ca) return cb - ca;
+            const ua = a?.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+            const ub = b?.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+            if (ub !== ua) return ub - ua;
+            const ida = typeof a?.id === 'string' ? a.id : '';
+            const idb = typeof b?.id === 'string' ? b.id : '';
+            // If ids look like YYYY-MM-DD, sort lexicographically desc as tiebreaker
+            const dateRe = /^\d{4}-\d{2}-\d{2}/;
+            if (dateRe.test(idb) && dateRe.test(ida)) return idb.localeCompare(ida);
+            return 0;
+          })[0];
+
+        if (latest) {
+          const s = (latest.startWord || '').toUpperCase();
+          const t = (latest.targetWord || '').toUpperCase();
           if (s && t) {
             setStartWord(s);
             setTargetWord(t);
             setWordChain([s]);
           }
-        } else {
-          console.warn('No DailyPuzzle found for', todayId);
         }
       } catch (err) {
-        console.warn('Failed to load DailyPuzzle:', err);
+        console.warn('Failed to load latest DailyPuzzle:', err);
       }
     };
-    loadToday();
+    loadLatest();
   }, []);
+
+  // Mock leaderboard data
+  const [leaderboard, setLeaderboard] = useState([
+    { name: 'Alice', steps: 3, words: ['START', 'ARTSY', 'STYLE', 'END'] },
+    { name: 'Bob', steps: 4, words: ['START', 'TARDY', 'YARDS', 'SANDY', 'END'] },
+    { name: 'Charlie', steps: 5, words: ['START', 'TARTS', 'SMART', 'TRAM', 'RAMP', 'END'] },
+    { name: 'Diana', steps: 6, words: ['START', 'ARTS', 'STAR', 'CART', 'CARD', 'CARE', 'END'] },
+    { name: 'Eve', steps: 7, words: ['START', 'PARTS', 'TRAPS', 'STRAP', 'PASTA', 'PAST', 'FAST', 'END'] }
+  ]);
 
   // Add custom CSS for fadeIn animation
   React.useEffect(() => {
@@ -53,6 +78,10 @@ const WordChainGame = () => {
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
+      }
+      .modal-backdrop {
+        backdrop-filter: blur(4px);
+        background-color: rgba(0, 0, 0, 0.3);
       }
     `;
     document.head.appendChild(style);
@@ -140,7 +169,12 @@ const WordChainGame = () => {
       
       if (newWord === targetWord) {
         setIsComplete(true);
-        setTimeout(() => setShowFullChain(true), 600);
+        setTimeout(() => {
+          setShowFullChain(true);
+        }, 600);
+        setTimeout(() => {
+          setShowScoreboard(true);
+        }, 1000);
       }
       
       // End animation
@@ -154,22 +188,26 @@ const WordChainGame = () => {
     setIsComplete(false);
     setShowFullChain(false);
     setInvalidWord(false);
+    setShowScoreboard(false);
   };
 
   const handleLogin = () => {
     if (playerName.trim()) {
       setIsLoggedIn(true);
-      // Optionally push to leaderboard when backend model exists
+      // Add current score to leaderboard
       const currentScore = {
         name: playerName,
         steps: wordChain.length - 1,
-        words: [...wordChain],
+        words: [...wordChain]
       };
-      setLeaderboard((prev) => [currentScore, ...prev]);
+      const newLeaderboard = [...leaderboard, currentScore].sort((a, b) => a.steps - b.steps).slice(0, 10);
+      setLeaderboard(newLeaderboard);
     }
   };
 
-  const closeScoreboard = () => setShowScoreboard(false);
+  const closeScoreboard = () => {
+    setShowScoreboard(false);
+  };
 
   const continuousWord = buildContinuousWord();
 
@@ -324,46 +362,11 @@ const WordChainGame = () => {
           </div>
         )}
 
-        {/* Game Setup */}
+        {/* Daily Puzzle Notice */}
         <div className="border-t border-gray-200 pt-8">
-          <div className="flex justify-center gap-8 mb-8">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Start Word
-              </label>
-              <input
-                type="text"
-                value={startWord}
-                readOnly
-                disabled
-                className="w-28 px-3 py-2 border border-gray-300 rounded text-center font-semibold focus:outline-none focus:border-black"
-                maxLength={10}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Target Word
-              </label>
-              <input
-                type="text"
-                value={targetWord}
-                readOnly
-                disabled
-                className="w-28 px-3 py-2 border border-gray-300 rounded text-center font-semibold focus:outline-none focus:border-black"
-                maxLength={10}
-              />
-            </div>
-          </div>
-
-          {/* Instructions */}
           <div className="bg-gray-50 rounded-lg p-6 text-center">
-            <div className="text-sm text-gray-600 leading-relaxed">
-              <strong>How to play:</strong> Add words that share letters with the end of the current word. 
-              Overlapping letters will be highlighted in green and merge the words together.
-              <br />
-              <span className="text-gray-500">
-                Example: START → ARTSY → SYRINGE → GEARS → END
-              </span>
+            <div className="text-sm text-gray-700">
+              Daily puzzle is set automatically. New puzzle each day.
             </div>
           </div>
         </div>

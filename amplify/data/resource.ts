@@ -41,6 +41,8 @@ export const data = defineData({
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
+    // Allow IAM so the scheduled Lambda can write DailyPuzzle
+    iamAuthorizationMode: {},
   },
 });
 
