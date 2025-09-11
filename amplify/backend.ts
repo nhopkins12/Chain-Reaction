@@ -12,5 +12,4 @@ const orchestrate = defineFunction({
 defineBackend({
   auth,
   data,
-  orchestrate,
 });
