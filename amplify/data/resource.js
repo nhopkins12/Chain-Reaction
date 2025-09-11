@@ -27,12 +27,6 @@ const schema = a.schema({
         // allow.publicApiKey().to(["read"]),
         // allow.group("admins").to(["create", "update", "delete", "read"]),
     ]),
-    // Keeping Todo during transition (can be removed later)
-    Todo: a
-        .model({
-        content: a.string(),
-    })
-        .authorization((allow) => [allow.publicApiKey()]),
 });
 export const data = defineData({
     schema,
