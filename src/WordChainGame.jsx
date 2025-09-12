@@ -2,9 +2,9 @@ import React, { useState, useRef } from 'react';
 import { generateClient } from 'aws-amplify/data';
 
 const WordChainGame = () => {
-  const [startWord, setStartWord] = useState('START');
-  const [targetWord, setTargetWord] = useState('END');
-  const [wordChain, setWordChain] = useState(['START']);
+  const [startWord, setStartWord] = useState('');
+  const [targetWord, setTargetWord] = useState('');
+  const [wordChain, setWordChain] = useState(['']);
   const [currentInput, setCurrentInput] = useState('');
   const [isComplete, setIsComplete] = useState(false);
   const [showFullChain, setShowFullChain] = useState(false);
