@@ -3,9 +3,9 @@ import { generateClient } from 'aws-amplify/data';
 
 
 const WordChainGame = () => {
-  const [startWord, setStartWord] = useState(' ');
-  const [targetWord, setTargetWord] = useState(' ');
-  const [wordChain, setWordChain] = useState([' ']);
+  const [startWord, setStartWord] = useState('HELLO');
+  const [targetWord, setTargetWord] = useState('WORLD');
+  const [wordChain, setWordChain] = useState(['HELLO']);
   const [currentInput, setCurrentInput] = useState('');
   const [isComplete, setIsComplete] = useState(false);
   const [showFullChain, setShowFullChain] = useState(false);
@@ -157,7 +157,11 @@ const WordChainGame = () => {
       
       if (newWord === targetWord) {
         setIsComplete(true);
-        setTimeout(() => setShowFullChain(true), 600);
+        // Reveal any post-completion UI and open the scoreboard modal
+        setTimeout(() => {
+          setShowFullChain(true);
+          setShowScoreboard(true);
+        }, 600);
       }
       
       // End animation
