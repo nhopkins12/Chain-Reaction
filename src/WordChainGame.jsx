@@ -354,6 +354,12 @@ const WordChainGame = () => {
               <span className="text-gray-500">
                 Example: START → ARTSY → SYRINGE → GEARMEN → END
               </span>
+              
+              <button onClick={ async () => {
+              const client = generateClient();
+              const { data, errors } = await client.queries.testFunction({});
+            }
+              }>Clicking the button will trigger the thing</button>
             </div>
           </div>
         </div>
@@ -471,11 +477,6 @@ const WordChainGame = () => {
           </div>
         )}
       </div>
-      <button onClick={ async () => {
-        const client = generateClient();
-        const { data, errors } = await client.queries.testFunction({});
-      }
-        }>Clicking the button will trigger the thing</button>
     </div>
   );
 };
