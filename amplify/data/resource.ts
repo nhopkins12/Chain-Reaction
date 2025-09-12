@@ -43,7 +43,8 @@ const schema = a.schema({
     //   name: a.string(),
     // })
     .returns(a.string())
-    .authorization(allow => [allow.guest()])
+    // .authorization(allow => [allow.guest()])
+    .authorization(allow => [allow.publicApiKey()])
     // .authorization()
     .handler(a.handler.function(testFunction)),
 })
