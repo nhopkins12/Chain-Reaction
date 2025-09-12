@@ -1,4 +1,7 @@
 version: 1
+env:
+  variables:
+    NODE_VERSION: '20'
 backend:
   phases:
     build:
