@@ -313,10 +313,14 @@ const WordChainGame = () => {
                 Add
               </button>
               <button onClick={ async () => {
-              const client = generateClient();
+              console.log("made it to test function click")
+              // const client = generateClient();
               const { data, errors } = await client.queries.testFunction({});
+              console.log(data)
+              console.log(errors)
             }
-              }>Clicking the button will trigger the thing</button>
+              }className="px-6 py-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition-colors duration-200"
+              >Clicking the button will trigger the thing</button>
             </div>
             {invalidWord && (
               <div className="text-red-500 text-sm mt-2">
