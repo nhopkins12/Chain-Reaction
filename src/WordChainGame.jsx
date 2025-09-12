@@ -314,7 +314,8 @@ const WordChainGame = () => {
               </button>
               <button onClick={ async () => {
               console.log("made it to test function click")
-              const client = generateClient<Schema>({ authMode: "apiKey" });
+              const client = generateClient({ authMode: "apiKey" });
+
               
               const { data, errors } = await client.queries.testFunction({});
               console.log(data)
