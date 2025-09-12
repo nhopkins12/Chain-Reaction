@@ -39,11 +39,11 @@ const schema = a.schema({
 
     testFunction: a
     .query()
-    .arguments({
-      name: a.string(),
-    })
+    // .arguments({
+    //   name: a.string(),
+    // })
     .returns(a.string())
-    .authorization(allow => [allow.authenticated()])
+    .authorization(allow => [allow.guest()])
     // .authorization()
     .handler(a.handler.function(testFunction)),
 })

@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { generateClient } from 'aws-amplify/data';
 
+
 const WordChainGame = () => {
-  const [startWord, setStartWord] = useState('');
-  const [targetWord, setTargetWord] = useState('');
-  const [wordChain, setWordChain] = useState(['']);
+  const [startWord, setStartWord] = useState(' ');
+  const [targetWord, setTargetWord] = useState(' ');
+  const [wordChain, setWordChain] = useState([' ']);
   const [currentInput, setCurrentInput] = useState('');
   const [isComplete, setIsComplete] = useState(false);
   const [showFullChain, setShowFullChain] = useState(false);
@@ -14,6 +15,8 @@ const WordChainGame = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
+
+  const { data, errors } = await client
 
   // Load most recent DailyPuzzle from Amplify Data
   React.useEffect(() => {
@@ -470,6 +473,11 @@ const WordChainGame = () => {
           </div>
         )}
       </div>
+      <button onClick={() => {
+        const client = generateClient();
+        const { data, errors } = await client.queries.testFunction({});
+      }
+        }>Clicking the button will trigger the thing</button>
     </div>
   );
 };
