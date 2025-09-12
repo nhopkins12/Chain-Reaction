@@ -2,31 +2,36 @@ version: 1
 
 env:
   variables:
-    NODE_VERSION: '20'   # ensure Node 20 ABI
+    NODE_VERSION: '20'   # pin Node for the whole build
 
 backend:
   phases:
-    preBuild:            # NEW: split install to preBuild
+    preBuild:
       commands:
-        - node -v && npm -v
+        - echo "Node before switch:" && node -v && npm -v
+        # Use Amplify's nvm to switch Node (Amplify supports nvm use in buildspec)
+        - nvm install ${NODE_VERSION}
+        - nvm use ${NODE_VERSION}
+        - echo "Node after switch:" && node -v && npm -v
+        # npm 11.3 fixes platform-optional installs (rollup native, etc.)
         - npm i -g npm@11.3.0
         - npm -v
+        # clean, online install so platform packages are fetched
         - npm ci
+        # safety net if a prebuilt wasn't fetched; harmless if already present
+        - npm rebuild @parcel/watcher --build-from-source || true
     build:
       commands:
-        # Compile backend TS (keep your current behavior)
         - npx tsc -p amplify/tsconfig.json --pretty false || true
         - echo "Running ampx pipeline-deploy with debug logging"
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID --debug
 
 frontend:
   phases:
-    preBuild:            # NEW: ensure deps before build phase
+    preBuild:
       commands:
-        # Reuse node_modules installed in backend; if Amplify
-        # runs frontend in a fresh phase, this makes it explicit.
-        - test -d node_modules || npm ci --cache .npm --prefer-offline
-        # Safety: if watcher still missing, build it from source
+        # ensure deps exist in the frontend phase too (Amplify may run phases in separate shells)
+        - test -d node_modules || npm ci
         - npm rebuild @parcel/watcher --build-from-source || true
     build:
       commands:
