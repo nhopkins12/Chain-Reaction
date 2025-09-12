@@ -16,8 +16,6 @@ const WordChainGame = () => {
   const [playerName, setPlayerName] = useState('');
   const [leaderboard, setLeaderboard] = useState([]);
 
-  const { data, errors } = await client
-
   // Load most recent DailyPuzzle from Amplify Data
   React.useEffect(() => {
     const loadLatest = async () => {
@@ -473,7 +471,7 @@ const WordChainGame = () => {
           </div>
         )}
       </div>
-      <button onClick={() => {
+      <button onClick={ async () => {
         const client = generateClient();
         const { data, errors } = await client.queries.testFunction({});
       }
