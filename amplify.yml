@@ -8,11 +8,10 @@ backend:
   phases:
     preBuild:            # NEW: split install to preBuild
       commands:
-        - node -v
-        # install deps (no --no-optional flags anywhere)
-        - npm ci --cache .npm --prefer-offline
-        # If the prebuilt wasn't fetched, compile it:
-        - npm rebuild @parcel/watcher --build-from-source || true
+        - node -v && npm -v
+        - npm i -g npm@11.3.0
+        - npm -v
+        - npm ci
     build:
       commands:
         # Compile backend TS (keep your current behavior)
