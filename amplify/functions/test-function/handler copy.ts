@@ -14,8 +14,8 @@ Amplify.configure(resourceConfig, libraryOptions);
 const client = generateClient<Schema>();
 
 
-// export const handler: Handler = async (event) => {
-export const handler: Schema["testFunction"]["functionHandler"] = async (event) => {
+export const handler: Handler = async (event) => {
+// export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
 
   await client.models.DailyPuzzle.create({startWord: "test", targetWord: "tester"})
 

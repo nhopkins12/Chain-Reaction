@@ -36,6 +36,16 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+
+    testFunction: a
+    .query()
+    .arguments({
+      name: a.string(),
+    })
+    .returns(a.string())
+    .authorization(allow => [allow.authenticated()])
+    // .authorization()
+    .handler(a.handler.function(testFunction)),
 })
 .authorization(allow => [
     allow.resource(testFunction), // <- lets the function call Data
