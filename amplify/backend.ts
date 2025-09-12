@@ -2,6 +2,7 @@ import { defineBackend, defineFunction } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { testFunction } from './functions/test-function/resource'
+import { dailyWords } from './functions/daily-words/resource';
 
 // const orchestrate = defineFunction({
 //   name: 'orchestrate-puzzle',
@@ -13,5 +14,6 @@ import { testFunction } from './functions/test-function/resource'
 defineBackend({
   auth,
   data,
-  testFunction
+  testFunction,
+  dailyWords,
 });
